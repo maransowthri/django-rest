@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, viewsets
 from profiles_app.serializers import UserSerializer
 
 
@@ -61,3 +61,75 @@ class UsersAPIView(APIView):
         """
         return Response({ 'message': 'User has been deleted successfully' })
         
+
+class UsersViewset(viewsets.ViewSet):
+    """Test View Sets
+
+    Args:
+        viewsets (ViewSet): generic viewset provided by rest_framework
+    """
+    serializer_class = UserSerializer
+
+    def list(self, request):
+        """Get all user objects
+
+        Args:
+            request (HTTPRequest): Input request
+
+        Returns:
+            HTTPResponse: Expected API Response
+        """
+        usernames = ['Karan', 'Kalees', 'Maran', 'Mahesh']
+        return Response({ 'message': 'Usernames has been sent properly', 'usernames': usernames })
+    
+    def retrieve(self, request, pk=None):
+        """Retrieve a particualr user object
+
+        Args:
+            request (HTTPRequest): Input Request
+            pk (int): User ID
+        """
+        return Response({ 'messgae': 'Returning paricular user object' })
+    
+    def create(self, request):
+        """Creates a new user object
+
+        Args:
+            request (HTTPRequest): Input Request
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.validated_data.get('name')
+            greetings = f'Hello {name}'
+            return Response({ 'message': 'User object has been created successfully', 'greetings': greetings })
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, pk=None):
+        """Updates existing user object
+
+        Args:
+            request (HTTPRequest): Input Request
+            pk(int): User ID
+        """
+        return Response({ 'message': 'Updated user object successfully'})   
+
+    def partial_update(self, request, pk=None):
+        """Updates existing user object partially
+
+        Args:
+            request (HTTPRequest): Input Request
+            pk(int): User ID
+        """
+        return Response({ 'message': 'Partially updated user object successfully'})   
+    
+    def destroy(self, request, pk=None):
+        """Deleted existing user object
+
+        Args:
+            request (HTTPRequest): Input Request
+            pk(int): User ID
+        """
+        return Response({ 'message': 'Deleted user object successfully'})   
+    
