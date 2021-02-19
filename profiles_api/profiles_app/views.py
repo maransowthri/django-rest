@@ -1,16 +1,20 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status, viewsets
-from profiles_app.serializers import UserSerializer
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.authentication import TokenAuthentication
+
+from profiles_app.models import UserProfile
+from profiles_app.serializers import TestSerializer, UserProfileSerializer
+from profiles_app.permissions import UserProfilePermission
 
 
-class UsersAPIView(APIView):
+class TestAPIView(APIView):
     """Test API View
 
     Args:
         APIView (View): Generic API View provided by rest_framework
     """
-    serializer_class = UserSerializer
+    serializer_class = TestSerializer
 
     def get(self, request, format=None):
         """Returns list of user names
@@ -62,13 +66,13 @@ class UsersAPIView(APIView):
         return Response({ 'message': 'User has been deleted successfully' })
         
 
-class UsersViewset(viewsets.ViewSet):
+class TestViewSet(viewsets.ViewSet):
     """Test View Sets
 
     Args:
         viewsets (ViewSet): generic viewset provided by rest_framework
     """
-    serializer_class = UserSerializer
+    serializer_class = TestSerializer
 
     def list(self, request):
         """Get all user objects
@@ -133,3 +137,9 @@ class UsersViewset(viewsets.ViewSet):
         """
         return Response({ 'message': 'Deleted user object successfully'})   
     
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    serializer_class = UserProfileSerializer
+    queryset = UserProfile.objects.all()
+    permission_classes = (UserProfilePermission,)
+    authentication_classes = (TokenAuthentication,)
