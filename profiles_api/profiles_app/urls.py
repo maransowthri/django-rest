@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from profiles_app.views import TestAPIView, TestViewSet, UserProfileViewSet
+from profiles_app.views import TestAPIView, TestViewSet, UserProfileViewSet, UserAuthView
 
 
 router = DefaultRouter()
@@ -11,4 +11,5 @@ router.register('profiles-viewset', UserProfileViewSet, base_name='profile-views
 urlpatterns = [
     path('usernames-api/', TestAPIView.as_view()),
     path('', include(router.urls)),
+    path('login/', UserAuthView.as_view())
 ]

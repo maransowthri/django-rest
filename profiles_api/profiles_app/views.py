@@ -1,8 +1,10 @@
 from rest_framework import status, viewsets
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.filters import SearchFilter
+from rest_framework.settings import api_settings
 
 from profiles_app.models import UserProfile
 from profiles_app.serializers import TestSerializer, UserProfileSerializer
@@ -140,9 +142,23 @@ class TestViewSet(viewsets.ViewSet):
     
 
 class UserProfileViewSet(viewsets.ModelViewSet):
+    """Handles user profile read, update & delete
+
+    Args:
+        viewsets (ViewSet): Generic viewset provided by rest_framework
+    """
     serializer_class = UserProfileSerializer
     queryset = UserProfile.objects.all()
     permission_classes = (UserProfilePermission,)
     authentication_classes = (TokenAuthentication,)
     filter_backends = (SearchFilter,)
     search_fields = ('name', 'email')
+
+
+class UserAuthView(ObtainAuthToken):
+    """Handles user authentication
+
+    Args:
+        ObtainAuthToken (authToken): auth token provided by rest framework
+    """
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
