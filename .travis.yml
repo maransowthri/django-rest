@@ -1,1 +1,1 @@
-script: ./build.sh
+before_script: cd recipes_api
