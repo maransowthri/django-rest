@@ -14,7 +14,20 @@ class UserProfilePermission(permissions.BasePermission):
             request (HTTPRequest): Input request
             object (User): User object to be viewed / updated
         """
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        else:
-            return object.id == request.user.id
+        return request.method in permissions.SAFE_METHODS or object.id == request.user.id
+
+
+class ProfileFeedPermission(permissions.BasePermission):
+    """Checks permissions to view or update feed
+
+    Args:
+        permissions (Permission): Base permission provided by rest framework
+    """
+    def has_object_permission(self, request, view, obj):
+        """Checks whether user has a permission to read or update
+
+        Args:
+            request (HTTPRequest): Input Request
+            obj (ProfileFeedItem): Profile feed item to be updated or viewed
+        """
+        return request.method in permissions.SAFE_METHODS or obj.user_profile.id == request.user.id

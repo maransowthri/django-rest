@@ -5,10 +5,11 @@ from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.settings import api_settings
+from rest_framework.permissions import IsAuthenticated
 
-from profiles_app.models import UserProfile
-from profiles_app.serializers import TestSerializer, UserProfileSerializer
-from profiles_app.permissions import UserProfilePermission
+from profiles_app.models import UserProfile, ProfileFeedItem
+from profiles_app.serializers import TestSerializer, UserProfileSerializer, ProfileFeedItemSerializer
+from profiles_app.permissions import UserProfilePermission, ProfileFeedPermission
 
 
 class TestAPIView(APIView):
@@ -162,3 +163,23 @@ class UserAuthView(ObtainAuthToken):
         ObtainAuthToken (authToken): auth token provided by rest framework
     """
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+class UserProfileFeedViewSet(viewsets.ModelViewSet):
+    """Handles profile feeds
+
+    Args:
+        viewsets (ViewSet): Generic ViewSet provided by rest framework
+    """
+    serializer_class = ProfileFeedItemSerializer
+    queryset = ProfileFeedItem.objects.all() 
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, ProfileFeedPermission)
+
+    def perform_create(self, serializer):
+        """Sets user profile to the logged in user
+
+        Args:
+            serializer (Serializer): Serializer used for this ViewSet
+        """
+        serializer.save(user_profile=self.request.user)
+
