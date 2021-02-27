@@ -1,8 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from rest_framework.test import APIClient
+from unittest.mock import patch
 
 from recipe.models import Tag, Ingredient, Recipe
+from recipe import models
 
 
 def sample_user(name='Maran', email='maran@gma.com', password='passwewed'):
@@ -35,3 +37,11 @@ class TestRecipeModels(TestCase):
             price=8.00
         )
         self.assertEqual(str(recipe), recipe.title)
+
+    @patch('uuid.uuid4')
+    def test_recipe_image_filename(self, mock_uuid):
+        uuid = 'test-uuid'
+        mock_uuid.return_value = uuid
+        file_path = models.get_recipe_filepath(None, 'my-image.jpg')
+        exp_path = f'/uploads/recipe/{uuid}.jpg'
+        self.assertEqual(file_path, exp_path)
